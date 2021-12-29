@@ -1,0 +1,3 @@
+name = TDMP Phalanx Example
+author = TDMP Team
+description = This mod is made for testing TDMP api in different lua state

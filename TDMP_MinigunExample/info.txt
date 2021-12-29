@@ -1,0 +1,4 @@
+name = Minigun TDMP Support
+author = Tuxedo Labs
+description = MP support for minigun
+tags = Tool
