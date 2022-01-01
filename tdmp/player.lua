@@ -77,8 +77,6 @@ function Player:ID()
 	return self.id
 end
 
--- TODO:
---[[
 function Player:IsDead()
 	return self.health <= 0
 end
@@ -86,7 +84,10 @@ end
 function Player:Health()
 	return self.health
 end
-]]
+
+function Player:CurrentTool()
+	return self.heldItem
+end
 
 local idCache = {}
 setmetatable(Player,
