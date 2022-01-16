@@ -37,6 +37,14 @@ function Player:GetCamera()
 	return TDMP_GetPlayerCameraTransform(self.id)
 end
 
+function Player:GetToolTransform()
+	return TDMP_GetPlayerToolTransform(self.id)
+end
+
+function Player:GetToolBody()
+	return TDMP_GetPlayerToolBody(self.id)
+end
+
 -- TODO: Make it possible to know whether or not player is crouching. Would ve very useful for player model
 --[[
 function Player:IsCrouching()

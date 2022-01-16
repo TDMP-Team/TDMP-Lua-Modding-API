@@ -7,10 +7,11 @@ if not TDMP_LocalSteamId then return end
 
 #include "json.lua"
 
-function Hook_Run(hookName, hookData)
-	TDMP_RunGlobalHook(hookName, hookData and json.encode(hookData) or "")
+function Hook_Run(eventName, data, noPack)
+	data = data or ""
+	TDMP_RunGlobalHook(eventName, noPack and tostring(data) or data ~= "" and json.encode(data) or "")
 end
 
-function Hook_AddListener(hook, hookName, callback)
-	TDMP_AddGlobalHookListener(hook, hookName, callback)
+function Hook_AddListener(eventName, id, callback)
+	TDMP_AddGlobalHookListener(eventName, id, callback)
 end
