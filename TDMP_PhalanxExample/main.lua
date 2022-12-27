@@ -16,32 +16,34 @@ function init()
 	stop = LoadSound("snd/stop.ogg")
 	start = LoadSound("snd/start.ogg")
 
-	TDMP_RegisterEvent("MyMPgun", function(jsonData)
+	TDMP_RegisterEvent("MyMPgun", function(jsonData, steamid)
 		local data = json.decode(jsonData)
+		steamid = steamid or data[2]
 
 		if data[1] then
 			-- we dont need to play start sound twice
-			if not shooters[data[2]] then
-				if not shooters[data[2]] then
-					PlaySound(start, data[3], 1)
+			if not shooters[steamid] then
+				if not shooters[steamid] then
+					PlaySound(start, Player(steamid):GetPos(), 1)
 				end
 
-				shooters[data[2]] = true
+				shooters[steamid] = true
 			end
 		else
-			PlaySound(stop, shooters[data[2]], 1)
+			PlaySound(stop, shooters[steamid], 1)
 
-			shooters[data[2]] = nil
+			shooters[steamid] = nil
 		end
 
 		if not TDMP_IsServer() then return end
-
+		data[3] = steamid
+			
 		TDMP_ServerStartEvent("MyMPgun", {
 			Receiver = TDMP.Enums.Receiver.ClientsOnly, -- We've received that event already so we need to broadcast it only to clients, not again to ourself
 			Reliable = true,
 
-			DontPack = true,
-			Data = jsonData
+			DontPack = false,
+			Data = data
 		})
 	end)
 end
@@ -100,7 +102,7 @@ function tick()
 		TDMP_ClientStartEvent("MyMPgun", {
 			Reliable = true,
 
-			Data = {false, LocalSteamID}
+			Data = {false}
 		})
 	elseif InputPressed("lmb") then
 		local dir = GetAimDirection()
@@ -109,7 +111,7 @@ function tick()
 			Reliable = true,
 
 			-- Shoot, Shooter, shootPos (for sound)
-			Data = {true, LocalSteamID, GetPlayerCameraTransform().pos}
+			Data = {true}
 		})
 	end
 end
