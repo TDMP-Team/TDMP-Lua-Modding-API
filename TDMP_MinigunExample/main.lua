@@ -1,4 +1,7 @@
 --[[-------------------------------------------------------------------------
+THIS IS OUTDATED EXAMPLE. You still can look at it to see how networking works, but for better result
+look for more function on wiki pages
+
 Example of adding networking to an existing gun. It's official Teardown
 mod which adds minigun:
 https://steamcommunity.com/sharedfiles/filedetails/?id=2399638849
@@ -19,12 +22,13 @@ if TDMP_LocalSteamId then
 
 	-- so how it works: If we're playing in multiplayer, this function exists, and we can then calmly register our custom event
 	-- Callback funcion always receives string as a single argument. If there is no data passed to event, then string would be empty ""
-	TDMP_RegisterEvent("MinigunShoot", function(jsonData)
+	TDMP_RegisterEvent("MinigunShoot", function(jsonData, steamid)
 		-- we have two ways of making it work, with a default Teardown's Shoot function, or with TDMP's custom ballistic
 		-- "Shoot" function may be not accurate and it's also doesn't have any hooks, but I'll still leave it as an example
 		-- In case if we want to use TDMP's ballistics, we need to include "tdmp/ballistics.lua" file
 
 		local data = json.decode(jsonData)
+		steamid = steamid or data[5] -- steamid is valid only for server, so if it's nil then we'll use 5th element from table since server would pass it to us (i.e. look code below)
 
 		-- So if we want to use "Shoot" function then:
 		if not UseTDMPshooting then 
@@ -58,19 +62,30 @@ if TDMP_LocalSteamId then
 
 		-- And here we'll broadcast that shot to all clients
 		if not TDMP_IsServer() then return end
+		data[5] = steamid
 
 		TDMP_ServerStartEvent("MinigunShoot", {
 			Receiver = TDMP.Enums.Receiver.ClientsOnly, -- We've received that event already so we need to broadcast it only to clients, not again to ourself
 			Reliable = true,
 
-			DontPack = true, -- we already have json string which would be sent, so we can use it again.
-			Data = jsonData
+			DontPack = false, -- we have edited our data so we need to pack it as json string again
+			Data = data
 		})
 	end)
 
 	-- we need this for stooping sound loop only
-	TDMP_RegisterEvent("MinigunStopShooting", function(shooterId)
-		soundLoop[shooterId] = nil
+	TDMP_RegisterEvent("MinigunStopShooting", function(shooterId, steamid)
+		soundLoop[steamid or shooterId] = nil
+			
+		if not TDMP_IsServer() then return end
+			
+		TDMP_ServerStartEvent("MinigunStopShooting", {
+			Receiver = TDMP.Enums.Receiver.ClientsOnly, -- We've received that event already so we need to broadcast it only to clients, not again to ourself
+			Reliable = true,
+
+			DontPack = true, -- we already have json string which would be sent, so we can use it again.
+			Data = steamid
+		})
 	end)
 end
 
@@ -133,7 +148,7 @@ function tick(dt)
 						TDMP_ClientStartEvent("MinigunShoot", {
 							Reliable = true,
 
-							Data = {p, d, ct, LocalSteamID}
+							Data = {p, d, ct}
 						})
 					else
 						Shoot(p, d)
@@ -160,8 +175,8 @@ function tick(dt)
 					TDMP_ClientStartEvent("MinigunStopShooting", {
 						Reliable = true,
 
-						DontPack = true, -- We're sending just ID so we dont need to json.encode here
-						Data = LocalSteamID
+						DontPack = true, -- We're not sending anything (just empty string) so it doesnt have to be packed as json string
+						Data = ""
 					})
 				end
 			end
