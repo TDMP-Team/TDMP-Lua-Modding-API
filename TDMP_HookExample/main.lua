@@ -76,7 +76,3 @@ function draw()
 		oldSup = SuppresionAmount
 	end
 end
-
-function tick()
-	TDMP_Hook_Queue() -- We're listening for any hooks so we must call this each tick
-end
