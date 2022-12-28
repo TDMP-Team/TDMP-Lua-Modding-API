@@ -1,0 +1,51 @@
+<prefab version="1">
+	<group>
+		<group name='Torso' pos='0.0 1.0 0.0'>
+			<body name='Torso' tags='playerBody_torso=1 playerCorpse SteamId=none' pos='0.05 0.8 0.0' dynamic='true'>
+				<vox pos='-0.05 -0.8 0.0' rot='0.0 0.0 0.0' file='MOD/stig.vox' tags='playerCorpse nocull' object='body'/>
+			</body>
+		</group>
+		<group name='Legs' pos='0.1 0.2 0.0'>
+			<body name='Right Leg Top' tags='playerBody_right_leg_top=1 playerCorpse SteamId=none' pos='-0.2 0.9 0.0' rot='0.0 180.0 0.0' dynamic='true'>
+				<vox pos='0.0 -0.4 0.0' rot='0.0 -180.0 0.0' file='MOD/stig.vox' tags='playerCorpse nocull' object='Leg_R'/>
+				<joint collide="true"/>
+			</body>
+			<body name='Right Leg Bottom' tags='playerBody_right_leg_bot=1 playerCorpse SteamId=none' pos='-0.2 0.5 0.0' rot='0.0 180.0 0.0' dynamic='true'>
+				<vox pos='0.0 -0.5 -0.1' rot='0.0 180.0 0.0' file='MOD/stig.vox' tags='playerCorpse nocull' object='foot_R'/>
+				<joint pos="0.0 0.1 0.0" collide="false"/>
+			</body>
+			<body name='Left Leg Top' tags='playerBody_left_leg_top=1 playerCorpse SteamId=none' pos='0.1 0.9 0.0' rot='0.0 180.0 0.0' dynamic='true'>
+				<vox pos='0.0 -0.4 0.0' rot='0.0 180.0 0.0' file='MOD/stig.vox' tags='playerCorpse nocull' object='Leg_L'/>
+				<joint collide="true"/>
+			</body>
+			<body name='Left Leg Bottom' tags='playerBody_left_leg_bot=1 playerCorpse SteamId=none' pos='0.1 0.5 0.0' rot='0.0 180.0 0.0' dynamic='true'>
+				<vox pos='0.0 -0.5 -0.1' rot='0.0 -180.0 0.0' file='MOD/stig.vox' tags='playerCorpse nocull' object='foot_L'/>
+				<joint pos="0.0 0.1 0.0" collide="false"/>
+			</body>
+		</group>
+		<group name='Head' pos='0.0 1.7 0.0'>
+			<body name='Head' tags='playerBody_head=1 playerCorpse SteamId=none' pos='0.05 0.1 -0.05' rot='0.0 -180.0 0.0' dynamic='true'>
+				<vox pos='0.05 -0.1 -0.1' rot='0.0 -180.0 0.0' file='MOD/stig.vox' tags='playerCorpse nocull' object='head_3'/>
+				<joint pos="0.0 -0.1 -0.05"/>
+			</body>
+		</group>
+		<group name='Arms' pos='0.1 0.9 0.0'>
+			<body name='Right Arm Top' tags='playerBody_right_arm_top=1 playerCorpse SteamId=none' pos='-0.4 0.7 0.0' rot='0.0 180.0 0.0' dynamic='true'>
+				<vox pos='0.0 -0.3 0.0' rot='0.0 180.0 0.0' file='MOD/stig.vox' tags='playerCorpse nocull' object='Uarm_R'/>
+				<joint pos="-0.1 0.0 0.0" rot="0 90" collide="true"/>
+			</body>
+			<body name='Right Arm Bottom' tags='playerBody_right_arm_bot=1 playerCorpse SteamId=none' pos='-0.4 0.4 0.0' rot='0.0 180.0 0.0' dynamic='true'>
+				<vox pos='0.0 -0.4 0.0' rot='0.0 180.0 0.0' file='MOD/stig.vox' tags='playerCorpse nocull' object='larm_R'/>
+				<joint/>
+			</body>
+			<body name='Left Arm Top' tags='playerBody_left_arm_top=1 playerCorpse SteamId=none' pos='0.3 0.7 0.0' rot='0.0 180.0 0.0' dynamic='true'>
+				<vox pos='-0.0 -0.3 0.0' rot='0.0 180.0 0.0' file='MOD/stig.vox' tags='playerCorpse nocull' object='Uarm_L'/>
+				<joint pos="0.1 0.0 0.0" rot="0 90" collide="true"/>
+			</body>
+			<body name='Left Arm Bottom' tags='playerBody_left_arm_bot=1 playerCorpse SteamId=none' pos='0.3 0.4 0.0' rot='0.0 180.0 0.0' dynamic='true'>
+				<vox pos='-0.0 -0.4 0.0' rot='0.0 180.0 0.0' file='MOD/stig.vox' tags='playerCorpse nocull' object='larm_L'/>
+				<joint/>
+			</body>
+		</group>
+	</group>
+</prefab>

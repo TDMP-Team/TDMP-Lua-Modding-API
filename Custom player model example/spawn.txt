@@ -1,0 +1,2 @@
+stig.xml : TDMP Models/Stig
+stig_ragdoll.xml : TDMP Models/Stig Ragdoll
