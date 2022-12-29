@@ -70,13 +70,14 @@ function TDMP_OverrideToolTransform(steamId, tr)
 end
 
 function TDMP_AddToolModel(toolUniqueId, data)
-	Hook_Run("AddToolModel", data)
-
 	Hook_AddListener(toolUniqueId .. "_CreateWorldModel", toolUniqueId, function(data)
+		data = json.decode(data)
 		local ents = Spawn(data[1], data[2])
 
 		return json.encode(ents)
 	end)
+
+	Hook_Run("AddToolModel", {data = data, tool = toolUniqueId})
 end
 
 -- https://www.iquilezles.org/www/articles/intersectors/intersectors.htm
