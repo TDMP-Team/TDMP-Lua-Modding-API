@@ -4,7 +4,8 @@ TDMP_GetPlayerTransformCameraRotationPositionBlablabla() each time, what
 makes code look more clear and easier to read
 ---------------------------------------------------------------------------]]
 
-if not TDMP_LocalSteamId then return end
+if not TDMP_LocalSteamID then return end
+#include "utilities.lua"
 
 Player = Player or {}
 Player.__index = Player
@@ -29,6 +30,10 @@ function Player:GetVehicle()
 	return self.veh
 end
 
+function Player:GetInteractShape()
+	return self.interactShape
+end
+
 function Player:IsDrivingVehicle()
 	return self.veh and self.veh > 0
 end
@@ -41,21 +46,80 @@ function Player:GetToolTransform()
 	return TDMP_GetPlayerToolTransform(self.id)
 end
 
-function Player:GetToolBody()
-	return TDMP_GetPlayerToolBody(self.id)
+function Player:SetVisible(state)
+	SetBool("tdmp." .. self:SteamID() .. ".notvisible", not state)
 end
 
--- TODO: Make it possible to know whether or not player is crouching. Would ve very useful for player model
---[[
-function Player:IsCrouching()
-	return
+function Player:IsVisible()
+	return not GetBool("tdmp." .. self:SteamID() .. ".notvisible")
 end
 
-function Player:GetHeight()
-	local crouch = self:IsCrouching()
-	return crouch and 1.1 or 1.8, crouch
+function Player:SetColor(r, g, b)
+	local steamid = self:SteamID()
+
+    SetFloat("tdmp.playercolor." .. steamid .. ".r", r)
+    SetFloat("tdmp.playercolor." .. steamid .. ".g", g)
+    SetFloat("tdmp.playercolor." .. steamid .. ".b", b)
 end
-]]
+
+function Player:GetColor(asTable)
+	local steamid = self:SteamID()
+
+    if not HasKey("tdmp.playercolor." .. steamid .. ".r") then
+        local rnd = math.random()
+        local r, g, b = hsv2rgb(rnd, 1, 1)
+
+        SetFloat("tdmp.playercolor." .. steamid .. ".r", r)
+        SetFloat("tdmp.playercolor." .. steamid .. ".g", g)
+        SetFloat("tdmp.playercolor." .. steamid .. ".b", b)
+    end
+
+    if asTable then
+    	return {
+    		GetFloat("tdmp.playercolor." .. steamid .. ".r"),
+    		GetFloat("tdmp.playercolor." .. steamid .. ".g"),
+    		GetFloat("tdmp.playercolor." .. steamid .. ".b")
+    	}
+    else
+    	return GetFloat("tdmp.playercolor." .. steamid .. ".r"), GetFloat("tdmp.playercolor." .. steamid .. ".g"), GetFloat("tdmp.playercolor." .. steamid .. ".b")
+    end
+end
+
+function Player:IsInputDown(buttonId)
+	if type(buttonId) == "string" then
+		if not TDMP.Input[buttonId] then
+			DebugPrint("Unknown input! (" .. tostring(buttonId) .. ")")
+
+			return false
+		end
+
+		buttonId = TDMP.Input[buttonId]
+	elseif not TDMP.InputToString[buttonId] then
+		DebugPrint("Unknown input! (" .. tostring(buttonId) .. ")")
+
+		return false
+	end
+
+	return TDMP_IsPlayerInputDown(self.id, buttonId)
+end
+
+function Player:IsInputPressed(buttonId)
+	if type(buttonId) == "string" then
+		if not TDMP.Input[buttonId] then
+			DebugPrint("Unknown input! (" .. tostring(buttonId) .. ")")
+
+			return false
+		end
+
+		buttonId = TDMP.Input[buttonId]
+	elseif not TDMP.InputToString[buttonId] then
+		DebugPrint("Unknown input! (" .. tostring(buttonId) .. ")")
+
+		return false
+	end
+
+	return TDMP_IsPlayerInputPressed(self.id, buttonId)
+end
 
 function Player:GetAimDirection(cam)
 	cam = cam or self:GetCamera()
@@ -64,14 +128,6 @@ function Player:GetAimDirection(cam)
 
 	return VecNormalize(dir), VecLength(dir)
 end
-
--- TODO:
---[[
-function Player:GetToolTransform()
-	return self.ToolTransform
-end
-]]
-
 
 function Player:SteamID()
 	return self.steamId
@@ -97,7 +153,22 @@ function Player:CurrentTool()
 	return self.heldItem
 end
 
-local idCache = {}
+function Player:GetToolBody(entId)
+	if self:IsMe() then
+		return GetToolBody()
+	end
+
+	entId = entId or 1
+	local b = FindBodies("playerTool_" .. entId, true)
+	for i, hnd in ipairs(b) do
+		if GetTagValue(hnd, "playerTool") == self:SteamID() then
+			return hnd
+		end
+	end
+
+	return 0
+end
+
 setmetatable(Player,
 	{
 		__call = function(self, ply)
@@ -106,23 +177,13 @@ setmetatable(Player,
 			local t = type(ply)
 			if t == "table" then
 				data = ply
-			elseif t == "string" then
-				if not idCache[ply] then
-					for i, pl in ipairs(TDMP_GetPlayers()) do
-						if pl.steamId == ply then
-							idCache[ply] = pl.id
-							data = TDMP_GetPlayer(pl.id)
-
-							break
-						end
-					end
-				else
-					data = TDMP_GetPlayer(idCache[ply])
-				end
 			else
 				data = TDMP_GetPlayer(ply)
 			end
 
+			if not data then return end
+
+			data.steamid = data.steamId
 			return setmetatable(data, Player)
 		end
 	}

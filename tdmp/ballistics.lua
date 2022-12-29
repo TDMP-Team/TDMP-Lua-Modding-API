@@ -2,12 +2,16 @@
 This file provides simplified ballistics api
 ---------------------------------------------------------------------------]]
 
-if not TDMP_LocalSteamId then return end
+if not TDMP_LocalSteamID then return end
+#include "json.lua"
 
 Ballistics = {}
 Ballistics.Type = {
 	Bullet = 0,
-	Rocket = 1
+	Rocket = 1,
+	Laser = 2,
+	Buckshot = 3,
+	Melee = 4,
 }
 
 --[[-------------------------------------------------------------------------
@@ -45,4 +49,14 @@ function Ballistics:Shoot(data)
 	data.ShootPos = data.Pos
 
 	Hook_Run("Shoot", data)
+end
+
+function Ballistics:RejectPlayerEntities()
+	for i, shape in ipairs(FindShapes("player", true)) do
+		QueryRejectShape(shape)
+	end
+
+	for i, shape in ipairs(FindShapes("playerTool", true)) do
+		QueryRejectShape(shape)
+	end
 end
